@@ -28,7 +28,7 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onSelectProj
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 border-b border-white/10 pb-6">
         <div>
           <span className="text-xs font-mono tracking-widest text-[#FF5A00] uppercase block mb-2">
-            // 02. FEATURED WORK
+            // 01. FEATURED WORK
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight font-display">
             SELECTED PROJECTS
@@ -45,6 +45,7 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onSelectProj
         {categories.map((category) => (
           <button
             key={category}
+            aria-pressed={activeCategory === category}
             onClick={() => setActiveCategory(category)}
             className={`px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
               activeCategory === category
@@ -59,26 +60,25 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onSelectProj
       </div>
 
       {/* Projects Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredProjects.map((project, index) => {
-          // Asymmetrical layout logic: first and fourth project get 7 cols, others get 5 cols
-          const isLargeCard = index % 3 === 0;
-          const colSpanClass = isLargeCard ? 'lg:col-span-7' : 'lg:col-span-5';
 
           return (
             <div
               key={project.id}
-              onClick={() => onSelectProject(project)}
-              className={`${colSpanClass} bg-[#111111] border border-white/[0.08] hover:border-[#FF5A00]/60 hover:bg-[#1A1A1A] rounded-[24px] p-4 sm:p-6 flex flex-col justify-between group cursor-pointer transition-all duration-300 hover:-translate-y-1 shadow-2xl overflow-hidden relative`}
+
+              className={`bg-[#111111] border border-white/[0.08] hover:border-[#FF5A00]/60 hover:bg-[#1A1A1A] rounded-[24px] p-4 sm:p-6 flex flex-col justify-between group transition-all duration-300 hover:-translate-y-1 shadow-2xl overflow-hidden relative`}
               id={`project-card-${project.id}`}
             >
               {/* Project Image Container */}
               <div className="relative aspect-[16/10] sm:aspect-[16/9] rounded-[18px] overflow-hidden mb-6 bg-[#0A0A0A] border border-white/[0.08]">
                 <img
                   src={project.heroImage}
+                  loading="lazy"
+                  decoding="async"
                   alt={project.title}
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-out"
                 />
                 
                 {/* Gradient Overlay */}
@@ -116,7 +116,7 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onSelectProj
                 </div>
 
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight group-hover:text-[#FF5A00] transition-colors font-display">
+                  <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight group-hover:text-[#FF5A00] transition-colors font-display">
                     {project.title}
                   </h3>
                   <p className="text-xs font-mono text-[#B5B5B5] mt-1">
@@ -146,10 +146,10 @@ export const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ onSelectProj
                 </div>
 
                 {/* Footer Link */}
-                <div className="pt-4 flex items-center justify-between text-xs font-mono font-bold text-[#FF5A00] group-hover:translate-x-1 transition-transform">
+                <button type="button" onClick={() => onSelectProject(project)} aria-label={`View ${project.title} details`} className="w-full pt-4 flex items-center justify-between text-xs font-mono font-bold text-[#FF5A00] group-hover:translate-x-1 transition-transform">
                   <span>VIEW PROJECT DETAILS</span>
                   <ArrowUpRight className="w-4 h-4" />
-                </div>
+                </button>
               </div>
 
             </div>

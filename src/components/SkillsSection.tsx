@@ -58,10 +58,10 @@ export const SkillsSection: React.FC = () => {
                 {cat.skills.map((skill, sIdx) => {
                   const isSelected = selectedSkill?.name === skill.name;
                   return (
-                    <div
+                    <button type="button" aria-pressed={isSelected}
                       key={sIdx}
                       onClick={() => setSelectedSkill(skill)}
-                      className={`p-3.5 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                      className={`w-full text-left p-3.5 rounded-2xl border transition-all duration-300 cursor-pointer ${
                         isSelected
                           ? 'bg-[#FF5A00] text-white border-[#FF5A00] font-bold shadow-lg shadow-[#FF5A00]/20'
                           : 'bg-[#1A1A1A] border-white/[0.08] text-white hover:border-[#FF5A00]/50 hover:bg-white/5'
@@ -82,7 +82,7 @@ export const SkillsSection: React.FC = () => {
                       }`}>
                         {skill.description}
                       </p>
-                    </div>
+                    </button>
                   );
                 })}
               </div>

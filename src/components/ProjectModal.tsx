@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Project } from '../types';
 import { X, ExternalLink, Award, CheckCircle2, Layers, Cpu, Sparkles } from 'lucide-react';
 
@@ -8,16 +8,30 @@ interface ProjectModalProps {
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    if (!project) return;
+    const trigger = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
+      if (e.key === 'Tab') {
+        const controls = dialogRef.current?.querySelectorAll<HTMLElement>('a[href], button, input, textarea, [tabindex="0"]');
+        if (!controls?.length) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
     };
     if (project) {
       document.body.style.overflow = 'hidden';
+      dialogRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
       window.addEventListener('keydown', handleKeyDown);
     }
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = previousOverflow;
+      trigger?.focus();
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [project, onClose]);
@@ -25,10 +39,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
   if (!project) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 lg:p-10 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-300">
+    <div onClick={e => { if (e.target === e.currentTarget) onClose(); }} className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 lg:p-10 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-300">
       
       {/* Container */}
-      <div className="bg-[#111111] border border-white/15 w-full max-w-5xl max-h-[92vh] rounded-3xl overflow-y-auto shadow-2xl relative flex flex-col scrollbar-thin scrollbar-thumb-white/20">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="project-dialog-title" className="bg-[#111111] border border-white/15 w-full max-w-5xl max-h-[92vh] rounded-3xl overflow-y-auto shadow-2xl relative flex flex-col scrollbar-thin scrollbar-thumb-white/20">
         
         {/* Sticky Modal Top Bar */}
         <div className="sticky top-0 z-30 bg-[#111111]/95 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex items-center justify-between">
@@ -72,9 +86,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
               )}
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight font-display">
+            <h2 id="project-dialog-title" className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight font-display">
               {project.title}
-            </h1>
+            </h2>
             <p className="text-base sm:text-lg text-[#B5B5B5] font-light max-w-3xl">
               {project.subtitle}
             </p>
@@ -161,20 +175,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-white/10 space-y-2 text-xs font-mono text-[#777777]">
-                <div className="flex justify-between">
-                  <span>Architecture:</span>
-                  <span className="text-white">Full-Stack / Client</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Accessibility:</span>
-                  <span className="text-emerald-400">WCAG AA Compliant</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Performance:</span>
-                  <span className="text-white">99/100 Lighthouse</span>
-                </div>
-              </div>
+
             </div>
 
           </div>
@@ -190,6 +191,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
                   <div key={gIdx} className="rounded-xl overflow-hidden border border-white/10 aspect-video bg-[#0A0A0A]">
                     <img
                       src={imgUrl}
+                      loading="lazy"
                       alt={`${project.title} preview ${gIdx + 1}`}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"

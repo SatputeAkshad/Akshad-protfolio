@@ -8,16 +8,14 @@ interface NavigationProps {
 }
 
 export const Navigation: React.FC<NavigationProps> = ({ activeSection, onNavigate }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const onEscape = (event: KeyboardEvent) => { if (event.key === 'Escape' && mobileMenuOpen) { setMobileMenuOpen(false); document.getElementById('mobile-menu-toggle')?.focus(); } };
+    window.addEventListener('keydown', onEscape);
+
+    return () => { window.removeEventListener('keydown', onEscape); };
+  }, [mobileMenuOpen]);
 
   const navItems = [
     { id: 'hero', label: 'Home' },
@@ -55,12 +53,13 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onNavigat
         </button>
 
         {/* Desktop Navigation Pill */}
-        <nav className="pointer-events-auto hidden md:flex items-center gap-1 bg-[#111111]/90 backdrop-blur-xl border border-white/[0.08] px-3 py-1.5 rounded-full shadow-2xl shadow-black/60">
+        <nav className="pointer-events-auto hidden xl:flex items-center gap-1 bg-[#111111]/90 backdrop-blur-xl border border-white/[0.08] px-3 py-1.5 rounded-full shadow-2xl shadow-black/60">
           {navItems.map((item) => {
             const isActive = activeSection === item.id;
             return (
               <button
                 key={item.id}
+                aria-current={activeSection === item.id ? "location" : undefined}
                 onClick={() => handleNavClick(item.id)}
                 className={`px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide uppercase transition-all duration-300 relative cursor-pointer ${
                   isActive
@@ -95,8 +94,10 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onNavigat
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden bg-[#111111] border border-white/[0.08] p-2.5 rounded-full text-white hover:text-[#FF5A00] transition-colors cursor-pointer"
+            className="xl:hidden bg-[#111111] border border-white/[0.08] p-2.5 rounded-full text-white hover:text-[#FF5A00] transition-colors cursor-pointer"
             aria-label="Toggle Navigation Menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
             id="mobile-menu-toggle"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -106,7 +107,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onNavigat
 
       {/* Mobile Drawer Overlay */}
       {mobileMenuOpen && (
-        <div className="pointer-events-auto fixed inset-x-4 top-20 bg-[#151515] border border-white/15 rounded-2xl p-6 shadow-2xl backdrop-blur-2xl md:hidden z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+        <nav id="mobile-navigation" aria-label="Mobile navigation" className="pointer-events-auto fixed inset-x-4 top-20 bg-[#151515] border border-white/15 rounded-2xl p-6 max-h-[calc(100dvh-6rem)] overflow-y-auto shadow-2xl backdrop-blur-2xl xl:hidden z-50 animate-in fade-in slide-in-from-top-4 duration-300">
           <div className="flex flex-col gap-3">
             <div className="text-[10px] font-mono text-[#777777] uppercase tracking-widest mb-1 pb-2 border-b border-white/10 flex items-center justify-between">
               <span>Navigation</span>
@@ -139,7 +140,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onNavigat
               <ArrowUpRight className="w-4 h-4" />
             </button>
           </div>
-        </div>
+        </nav>
       )}
     </header>
   );

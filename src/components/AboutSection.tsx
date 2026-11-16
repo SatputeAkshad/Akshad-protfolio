@@ -10,7 +10,7 @@ export const AboutSection: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12 border-b border-white/10 pb-6">
         <div>
           <span className="text-xs font-mono tracking-widest text-[#FF5A00] uppercase block mb-2">
-            // 01. ABOUT ME
+            // 02. ABOUT ME
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight font-display">
             THE PERSON BEHIND THE WORK

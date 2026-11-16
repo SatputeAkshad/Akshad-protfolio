@@ -3,7 +3,7 @@ import { Play, Pause, RefreshCw, Sparkles, Sliders, Cpu, Zap } from 'lucide-reac
 
 export const InteractivePlayground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [speed, setSpeed] = useState(1);
   const [orangeGlow, setOrangeGlow] = useState(80);
   const [preset, setPreset] = useState<'cyber' | 'liquid' | 'constellation'>('cyber');
@@ -100,7 +100,7 @@ export const InteractivePlayground: React.FC = () => {
         });
       }
 
-      animationFrameId = requestAnimationFrame(render);
+      if (isPlaying) animationFrameId = requestAnimationFrame(render);
     };
 
     render();

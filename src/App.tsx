@@ -9,7 +9,7 @@ import { SkillsSection } from './components/SkillsSection';
 import { InteractivePlayground } from './components/InteractivePlayground';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
-import { CustomCursor } from './components/CustomCursor';
+
 import { ScrollProgress } from './components/ScrollProgress';
 import { Project } from './types';
 
@@ -19,7 +19,7 @@ export default function App() {
 
   // Intersection Observer for scroll tracking
   useEffect(() => {
-    const sections = ['hero', 'about', 'work', 'playground', 'experience', 'skills', 'contact'];
+    const sections = ['hero', 'work', 'about', 'playground', 'experience', 'skills', 'contact'];
     
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 250;
@@ -45,7 +45,7 @@ export default function App() {
     setActiveSection(sectionId);
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     }
   };
 
@@ -56,21 +56,22 @@ export default function App() {
       <ScrollProgress />
 
       {/* Custom Trailing Cursor */}
-      <CustomCursor />
+      <a className="skip-link" href="#main-content">Skip to content</a>
 
       {/* Navigation Bar */}
       <Navigation activeSection={activeSection} onNavigate={handleNavigate} />
 
       {/* Main Content Sections */}
-      <main className="space-y-12">
+      <main id="main-content" tabIndex={-1}>
         <HeroSection
           onExploreWork={() => handleNavigate('work')}
           onContactClick={() => handleNavigate('contact')}
         />
 
-        <AboutSection />
 
         <FeaturedProjects onSelectProject={(p) => setSelectedProject(p)} />
+
+        <AboutSection />
 
         <InteractivePlayground />
 

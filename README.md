@@ -2,8 +2,8 @@
 
 > A modern, responsive personal portfolio showcasing my projects, technical skills, experience, and journey as a software developer.
 
-🌐 **Live Portfolio:** [Your Portfolio URL](https://akshad-protfolio.vercel.app)  
-💼 **LinkedIn:** [Akshad Satpute](www.linkedin.com/in/akshad-satpute7)  
+🌐 **Live Portfolio:** [akshad-protfolio.vercel.app](https://akshad-protfolio.vercel.app)  
+💼 **LinkedIn:** [Akshad Satpute](https://www.linkedin.com/in/akshad-satpute7)  
 🐙 **GitHub:** [Akshad Satpute](https://github.com/SatputeAkshad)
 
 ---
@@ -28,10 +28,9 @@ This portfolio is designed to showcase:
 ## 🛠️ Tech Stack
 
 ### Frontend
-- React.js
-- JavaScript
-- HTML5
-- CSS3
+- React 19 + TypeScript
+- Vite
+- Hand-written CSS (light/dark themes)
 - Responsive Web Design
 
 ### Tools & Technologies
@@ -68,17 +67,12 @@ This portfolio is designed to showcase:
 ## 📂 Project Structure
 
 ```text
-portfolio/
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── sections/
-│   ├── App.jsx
-│   └── main.jsx
-├── package.json
-├── README.md
-└── ...
+src/
+├── components/   # one file per page section
+├── data/         # portfolioData.ts — all text content lives here
+├── index.css     # design tokens + styles
+├── App.tsx
+└── main.tsx
 ```
 
 ---
@@ -88,13 +82,13 @@ portfolio/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
+git clone https://github.com/SatputeAkshad/Akshad-protfolio.git
 ```
 
 ### 2. Navigate to the project
 
 ```bash
-cd YOUR-REPOSITORY
+cd Akshad-protfolio
 ```
 
 ### 3. Install dependencies
@@ -172,7 +166,7 @@ I believe the best way to learn development is:
 If you'd like to connect, collaborate, or discuss a project, feel free to reach out.
 
 **GitHub:** [github.com/SatputeAkshad](https://github.com/SatputeAkshad)  
-**LinkedIn:** [linkedin.com/in/AkshadSatpute](www.linkedin.com/in/akshad-satpute7)  
+**LinkedIn:** [linkedin.com/in/AkshadSatpute](https://www.linkedin.com/in/akshad-satpute7)  
 **Portfolio:** [AkshadSatpute](https://akshad-protfolio.vercel.app/)
 
 ---

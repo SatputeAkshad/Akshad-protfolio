@@ -1,35 +1,87 @@
-import React from 'react';
-import { ArrowDownRight, ArrowUpRight, Code2, Instagram } from 'lucide-react';
+import { useRef } from 'react';
+import { ArrowDown, Asterisk, Store } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import { SocialLinks } from './SocialLinks';
 
-interface HeroProps { onExploreWork: () => void; onContactClick: () => void; }
-export const HeroSection: React.FC<HeroProps> = ({ onExploreWork, onContactClick }) => (
-  <section id="hero" className="hero-section max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="hero-eyebrow"><span><span className="availability-dot" /> Open to internships & collaborations</span><span className="hidden sm:block">Pune, India · Portfolio</span></div>
-    <div className="hero-layout">
-      <div className="hero-copy">
-        <p className="hero-intro">Hey, I'm Akshad <span aria-hidden="true">↗</span></p>
-        <h1>I build digital<br /><span>experiences.</span><br />And the stories<br />behind them.</h1>
-        <p className="hero-description">Developer, content manager, and BCA student. Connecting thoughtful websites with the content and communities that bring them to life.</p>
-        <div className="hero-actions">
-          <button className="primary-action" onClick={onExploreWork} id="hero-view-work-btn">Explore my work <ArrowDownRight size={18} /></button>
-          <button className="secondary-action" onClick={onContactClick} id="hero-talk-btn">Let's talk <ArrowUpRight size={18} /></button>
+interface HeroProps {
+  onExploreWork: () => void;
+  onContactClick: () => void;
+}
+
+const PORTRAIT = 'https://i.ibb.co/qMBBY1fZ/Codex-Image-Aug-12-2026-01-39-08-PM.png';
+const MARQUEE = ['Web development', 'Content strategy', 'Brand building', 'E-commerce', 'Community', 'UI design'];
+
+export const HeroSection = ({ onExploreWork, onContactClick }: HeroProps) => {
+  const visual = useRef<HTMLDivElement>(null);
+
+  // Tilt the sticker card toward the pointer (-1…1 on each axis).
+  const onMove = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse' || !visual.current) return;
+    const r = visual.current.getBoundingClientRect();
+    visual.current.style.setProperty('--tx', (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+    visual.current.style.setProperty('--ty', (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+  };
+  const onLeave = () => {
+    visual.current?.style.setProperty('--tx', '0');
+    visual.current?.style.setProperty('--ty', '0');
+  };
+
+  return (
+    <>
+      <section id="hero" className="hero container">
+        <div className="hero-copy">
+          <p className="chip glass"><span className="status-dot" aria-hidden="true" />{PERSONAL_INFO.availability}</p>
+          <h1>I build websites and the stories behind them.</h1>
+          <p className="hero-lede">
+            I'm Akshad — a developer, content manager and BCA student in Pune, connecting thoughtful
+            websites with the content and communities that bring them to life.
+          </p>
+          <div className="hero-actions">
+            <button className="btn btn-ink glass" onClick={onExploreWork}>View my work <ArrowDown size={17} /></button>
+            <button className="btn glass" onClick={onContactClick}>Get in touch</button>
+          </div>
+          <SocialLinks className="hero-socials" />
         </div>
-        <div className="hero-socials">
-          <a href={PERSONAL_INFO.socials.github} target="_blank" rel="noopener noreferrer">GitHub <ArrowUpRight size={13} /></a>
-          <a href={PERSONAL_INFO.socials.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn <ArrowUpRight size={13} /></a>
-          <span>Code. Content. Community.</span>
+
+        <div className="hero-visual" data-depth ref={visual} onPointerMove={onMove} onPointerLeave={onLeave}>
+          <figure className="holo-card glass">
+            <div className="holo-photo">
+              <img src={PORTRAIT} alt="Portrait of Akshad Satpute" fetchPriority="high" referrerPolicy="no-referrer" />
+              <div className="holo-sheen" aria-hidden="true" />
+            </div>
+            <figcaption className="holo-caption">
+              <div>
+                <strong>{PERSONAL_INFO.fullName}</strong>
+                <span>Developer & content manager</span>
+              </div>
+              <span>Pune, IN</span>
+            </figcaption>
+          </figure>
+          <a className="hero-float glass" href="https://stickwithme.shop" target="_blank" rel="noopener noreferrer">
+            <span className="hero-float-icon" aria-hidden="true"><Store size={19} /></span>
+            <span>
+              <small>Currently building</small>
+              <strong>stickwithme.shop</strong>
+            </span>
+          </a>
+        </div>
+      </section>
+
+      <div className="container" data-depth>
+        <div className="marquee-wrap">
+          <div className="marquee glass glass-quiet" aria-hidden="true">
+            <div className="marquee-track">
+              {[0, 1].map(copy => (
+                <div className="marquee-group" key={copy}>
+                  {MARQUEE.map(word => (
+                    <span className="marquee-item" key={word}>{word}<Asterisk size={20} /></span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-      <div className="hero-art">
-        <div className="hero-art-top"><span>THE CREATIVE SIDE OF CODE</span><span>AS / 01</span></div>
-        <img src="https://i.ibb.co/RGB0B4vn/22127.jpg" alt="Akshad Satpute outdoors" fetchPriority="high" className="hero-art-image" />
-        <div className="hero-art-shade" />
-        <div className="hero-sticker"><Code2 size={18} /><span>Built with curiosity.</span></div>
-        <div className="hero-art-caption"><span>DEVELOPER × STORYTELLER</span><strong>Ideas into<br />something real<span>.</span></strong></div>
-        <a className="hero-feature" href="https://stickwithme.shop" target="_blank" rel="noopener noreferrer"><div className="hero-feature-icon"><Instagram size={22} /></div><div><span>CURRENTLY BUILDING</span><strong>stickwithme.shop</strong><small>Co-founder · Content & commerce</small></div><ArrowUpRight size={22} /></a>
-      </div>
-    </div>
-    <div className="hero-footer"><span>DEVELOPMENT</span><span aria-hidden="true">✳</span><span>CONTENT STRATEGY</span><span aria-hidden="true">✳</span><span>BRAND BUILDING</span><button onClick={onExploreWork}>Scroll to explore <ArrowDownRight size={16} /></button></div>
-  </section>
-);
+    </>
+  );
+};

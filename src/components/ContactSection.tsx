@@ -1,54 +1,87 @@
-import React, { useState } from 'react';
-import { ArrowUpRight, Github, Linkedin, Instagram, Copy, Check } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowUpRight, Check, Copy, Mail, Send } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import { SectionHeader } from './SectionHeader';
+import { SocialLinks } from './SocialLinks';
 
-export const ContactSection: React.FC = () => {
+export const ContactSection = () => {
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState('');
   const [draft, setDraft] = useState({ name: '', email: '', message: '' });
+  const email = PERSONAL_INFO.socials.email;
+
+  // Reset the "copied" tick after a moment so the button can be used again.
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 2000);
+    return () => clearTimeout(t);
+  }, [copied]);
+
   const copyEmail = async () => {
     try {
-      await navigator.clipboard.writeText(PERSONAL_INFO.socials.email);
+      await navigator.clipboard.writeText(email);
       setCopied(true);
       setStatus('Email address copied.');
     } catch {
-      setStatus('Copy unavailable. Select the email address or open the email link.');
+      setStatus('Copy unavailable — select the address above instead.');
     }
   };
+
   const openEmail = (event: React.FormEvent) => {
     event.preventDefault();
-    const subject = encodeURIComponent(`Portfolio enquiry from ${draft.name}`);
-    const body = encodeURIComponent(`Hi Akshad,\n\n${draft.message}\n\n${draft.name}\nReply to: ${draft.email}`);
-    window.location.href = `mailto:${PERSONAL_INFO.socials.email}?subject=${subject}&body=${body}`;
-    setStatus('Your email app has been requested. Review and send your message there. If it does not open, email me directly using the address shown here.');
+    const name = draft.name.trim();
+    const subject = encodeURIComponent(`Portfolio enquiry from ${name}`);
+    const body = encodeURIComponent(`Hi Akshad,\n\n${draft.message.trim()}\n\n${name}\nReply to: ${draft.email.trim()}`);
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    setStatus('Opening your email app — review and send it from there.');
   };
+
+  const update = (field: keyof typeof draft) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setDraft(d => ({ ...d, [field]: e.target.value }));
+
   return (
-    <section id="contact" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-      <div className="contact-layout">
-        <div>
-          <span className="bento-label">HAVE SOMETHING IN MIND?</span>
-          <h2 className="contact-heading">Let's make<br />it <span>happen.</span></h2>
-          <p className="text-[#B5B5B5] leading-relaxed max-w-sm">An internship, a website, a content idea, or a collaboration. I'd love to hear about it.</p>
-          <div className="contact-email-row"><a href={`mailto:${PERSONAL_INFO.socials.email}`}>{PERSONAL_INFO.socials.email}</a><button type="button" onClick={copyEmail} aria-label="Copy email address">{copied ? <Check size={18} /> : <Copy size={18} />}</button></div>
-          <div className="hero-socials">
-            <a href={PERSONAL_INFO.socials.github} target="_blank" rel="noopener noreferrer"><Github size={17} /> GitHub</a>
-            <a href={PERSONAL_INFO.socials.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin size={17} /> LinkedIn</a>
-            <a href={PERSONAL_INFO.socials.instagram} target="_blank" rel="noopener noreferrer"><Instagram size={17} /> Instagram</a>
+    <section id="contact" className="section">
+      <div className="container">
+        <SectionHeader icon={Send} title="Get in touch" />
+        <div className="contact-grid">
+          <div data-depth>
+          <div className="contact-intro glass d3">
+            <p className="contact-heading">Let's make it happen.</p>
+            <p className="contact-copy">An internship, a website, a content idea or a collaboration — I'd love to hear about it.</p>
+            <div className="contact-email">
+              <Mail size={20} aria-hidden="true" />
+              <a className="link" href={`mailto:${email}`}>{email}</a>
+              <button type="button" className="icon-btn" onClick={copyEmail} aria-label="Copy email address">
+                {copied ? <Check size={17} /> : <Copy size={17} />}
+              </button>
+            </div>
+            <SocialLinks className="contact-socials" />
+          </div>
+          </div>
+
+          <div data-depth>
+          <form className="form glass d3" onSubmit={openEmail}>
+            <div className="form-row">
+              <div className="field">
+                <label htmlFor="contact-name">Name</label>
+                <input id="contact-name" name="name" autoComplete="name" required maxLength={100} value={draft.name} onChange={update('name')} />
+              </div>
+              <div className="field">
+                <label htmlFor="contact-email">Email</label>
+                <input id="contact-email" name="email" type="email" autoComplete="email" required maxLength={254} value={draft.email} onChange={update('email')} />
+              </div>
+            </div>
+            <div className="field">
+              <label htmlFor="contact-message">Message</label>
+              <textarea id="contact-message" name="message" required maxLength={1500} rows={4} value={draft.message} onChange={update('message')} />
+            </div>
+            <button className="btn btn-ink glass" type="submit">Continue in email <ArrowUpRight size={16} /></button>
+            <p className="form-note">Opens a draft in your email app — nothing is sent until you hit send there.</p>
+            <p role="status" className="form-status">{status}</p>
+          </form>
           </div>
         </div>
-        <form className="contact-form" onSubmit={openEmail}>
-          <h3>Start a conversation <ArrowUpRight size={22} /></h3>
-          <div className="grid sm:grid-cols-2 gap-5">
-            <div><label htmlFor="contact-name-input">Your name</label><input id="contact-name-input" name="name" autoComplete="name" required maxLength={100} placeholder="Your name" value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} /></div>
-            <div><label htmlFor="contact-email-input">Email address</label><input id="contact-email-input" name="email" type="email" autoComplete="email" required maxLength={254} placeholder="you@example.com" value={draft.email} onChange={e => setDraft({ ...draft, email: e.target.value })} /></div>
-          </div>
-          <label htmlFor="contact-message-input">What are you thinking?</label>
-          <textarea id="contact-message-input" name="message" required maxLength={1500} rows={5} placeholder="Tell me a little about your idea or opportunity…" value={draft.message} onChange={e => setDraft({ ...draft, message: e.target.value })} />
-          <button className="primary-action" type="submit" id="contact-submit-btn">Continue in email <ArrowUpRight size={18} /></button>
-          <p className="text-xs text-[#B5B5B5] leading-relaxed">Opens a draft in your email app. You review and send it.</p>
-        </form>
       </div>
-      <p role="status" className="mt-4 text-sm text-[#B5B5B5]">{status}</p>
     </section>
   );
 };

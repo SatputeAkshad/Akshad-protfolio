@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-export const ScrollProgress: React.FC = () => {
-  const [scrollPercentage, setScrollPercentage] = useState(0);
+// Thin accent bar at the very top that fills as you scroll. Writes the transform
+// directly (no React state) so it stays smooth.
+export const ScrollProgress = () => {
+  const bar = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight - windowHeight;
-      if (documentHeight > 0) {
-        const scrolled = (window.scrollY / documentHeight) * 100;
-        setScrollPercentage(scrolled);
-      }
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+      if (bar.current) bar.current.style.transform = `scaleX(${p})`;
     };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, []);
 
-  return (
-    <div className="fixed top-0 left-0 right-0 h-0.5 bg-transparent z-50 pointer-events-none">
-      <div
-        className="h-full bg-gradient-to-r from-[#FF5A00] via-[#FF7A18] to-white transition-all duration-150 ease-out shadow-[0_0_8px_#FF5A00]"
-        style={{ width: `${scrollPercentage}%` }}
-      />
-    </div>
-  );
+  return <div ref={bar} className="scroll-progress" aria-hidden="true" />;
 };
